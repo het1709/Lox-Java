@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Lox {
 
-    static boolean hadError = false;
+    private static boolean hadError = false;
 
     public static void main(String args[]) throws IOException {
         if (args.length > 1) {
@@ -57,5 +57,9 @@ public class Lox {
     static private void report(int line, String where, String message) {
         System.err.println("[line " + line + "] Error " + where + ": " + message);
         hadError = true;
+    }
+
+    static boolean getErrorStatus() {
+        return hadError;
     }
 }

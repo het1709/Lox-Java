@@ -73,8 +73,33 @@ class Scanner {
                 break;
             case '"': string(); break; // Handle strings
             default:
-                Lox.error(line, "Unexpected character.");
+                if (isDigit(c)) {
+                    number();
+                } else {
+                    Lox.error(line, "Unexpected character.");
+                }
                 break;
+        }
+    }
+
+    /**
+     * Handle scanning number literals
+     * */
+    private void number() {
+        while (isDigit(peek())) advance();
+
+        // Look for a fractional part
+        if (peek() == '.') {
+            if (isDigit(peekNext())) {
+                advance(); // Consume the '.'
+                while (isDigit(peek())) advance(); // Consume the rest of the fractional part
+            } else {
+                Lox.error(line, "Invalid number format.");
+            }
+        }
+
+        if (!Lox.getErrorStatus()) {
+            addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
         }
     }
 
@@ -121,6 +146,24 @@ class Scanner {
     private char peek() {
         if (isAtEnd()) return '\0';
         return source.charAt(current);
+    }
+
+    /**
+     * Returns the char after the next unconsumed character without consuming it.
+     * @return Character after the character returned by peek()
+     * */
+    private char peekNext() {
+        if (current + 1 >= source.length()) return '\0';
+        return source.charAt(current + 1);
+    }
+
+    /**
+     * Checks whether the given character is a digit or not.
+     * @param c character to test
+     * @return whether the character is digit
+     * */
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
     }
 
     /**
